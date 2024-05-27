@@ -3,10 +3,11 @@
 /* eslint-disable no-undef */
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import { toast } from 'react-hot-toast';
+// import { toast } from 'react-toastify';
 // import { LoginSocialGoogle } from 'reactjs-social-login';
 // import { GoogleLogin } from 'react-google-login';
-import axios from 'axios';
+// import axios from 'axios';
+// import { employeeUrl } from '../../../API/api';
 // import { employeeUrl } from '../../../API/Api';
 // import Navbar from '../Navbar';
 
@@ -14,24 +15,27 @@ function EmployeeLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const employeeData = { email, password };
+  // const employeeData = { email, password };
 
   const verifyLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${employeeUrl}login`, employeeData);
-      console.log('res:', response);
-      if (response.data.success) {
-        toast.success(response.data.message);
-        navigate('/');
-        localStorage.setItem('token', response.data.data);
-      } else if (response.data.noemployee) {
-        toast.error(response.data.message);
-      } else {
-        toast.error(response.data.message);
-      }
+      // const response = await axios.post(`${employeeUrl}signIn`, employeeData);
+      // console.log('res:', response);
+      navigate('/dashboard');
+      // if (response.data.success) {
+      //   // toast.success(response.data.message);
+      //   navigate('/dashboard');
+      //   localStorage.setItem('token', response.data.data);
+      // } else if (response.data.noemployee) {
+      //   navigate('/dashboard');
+      //   // toast.error(response.data.message);
+      // } else {
+      //   navigate('/dashboard');
+      //   // toast.error(response.data.message);
+      // }
     } catch (error) {
-      toast.error('Something went wrong');
+      // toast.error('Something went wrong');
     }
   };
 

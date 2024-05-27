@@ -26,30 +26,31 @@ export const signUp = async (req, res) => {
 
 export const SignIn = async (req, res) => {
     try {
-        const { email, password } = req.body
-        const employee = await employeeModel.findOne({ email: email })
+        // const { email, password } = req.body
+        // const employee = await employeeModel.findOne({ email: email })
         console.log('employee: ', employee);
-        if (employee) {
-            const isMatchPswrd = await bcrypt.compare(password, employee.password)
-            if (!isMatchPswrd) {
-                console.log('no');
-                res.status(401).send({ message: "Incorrect Password", incPass: true })
-            } else {
-                console.log('yes');
-                const token = jwt.sign({ id: employee._id }, process.env.JWT_SECRET, {
-                    expiresIn: '1y'
-                })
-                console.log('token :', token);
-                await employeeModel.findByIdAndUpdate(employee._id,{
-                    $set: {
-                        status: true
-                    }
-                })
-                res.status(200).send({ message: "Login Successfull", success: true, data: token })
-            }
-        } else {
-            res.status(401).send({ message: "Incorrect Email or Password", incEmail: false })
-        }
+        res.status(200).send({ message: "Login Successfull"})
+        // if (employee) {
+        //     const isMatchPswrd = await bcrypt.compare(password, employee.password)
+        //     if (!isMatchPswrd) {
+        //         console.log('no');
+        //         res.status(401).send({ message: "Incorrect Password", incPass: true })
+        //     } else {
+        //         console.log('yes');
+        //         const token = jwt.sign({ id: employee._id }, process.env.JWT_SECRET, {
+        //             expiresIn: '1y'
+        //         })
+        //         console.log('token :', token);
+        //         await employeeModel.findByIdAndUpdate(employee._id,{
+        //             $set: {
+        //                 status: true
+        //             }
+        //         })
+        //         res.status(200).send({ message: "Login Successfull", success: true, data: token })
+        //     }
+        // } else {
+        //     res.status(401).send({ message: "Incorrect Email or Password", incEmail: false })
+        // }
     } catch (error) {
         res.status(500).send({ message: "Error in Login", success: false, error })
     }
