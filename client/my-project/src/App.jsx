@@ -7,17 +7,17 @@ import AdminLogin from './components/admin/pages/AdminLogin';
 import AdminDashboard from './components/admin/pages/AdminDashboard';
 import Details from './components/admin/pages/Details';
 import EmployeeSignUp from './components/employee/pages/SignUp';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // import Navbar from './components/employee/Navbar';
-// import { ToastContainer } from 'react-toastify';
 
 function App() {
 
   return (
     <div>
       <BrowserRouter>
-        {/* <Toaster position="top-center" /> */}
+        <ToastContainer />
         <Routes>
-          {/* <ToastContainer position="top-center"/> */}
           <Route
             path="/"
             element={

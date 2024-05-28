@@ -14,10 +14,26 @@ const employeeSchema = new mongoose.Schema({
     password: {
         type: String
     },
-    role: {
-        type: String,
-        default: "Admin"
-    }
+    block: {
+        type: Boolean
+    },
+    attendance: [{
+        issue_date: {
+            type: Date
+        },
+        total_time : {
+            type: String
+        },
+        break_time : {
+            type: String
+        },
+        working_time : {
+            type: String
+        },
+        leave: {
+            type: Boolean
+        }
+    }]
 })
 
 

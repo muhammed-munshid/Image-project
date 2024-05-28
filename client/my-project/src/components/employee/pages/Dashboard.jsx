@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { employeeUrl } from '../../../API/api';
+import { toast } from 'react-toastify';
 
 // eslint-disable-next-line react/prop-types
 function Dashboard({ showList, handleGoBack, handleViewList }) {
@@ -9,6 +10,8 @@ function Dashboard({ showList, handleGoBack, handleViewList }) {
     const [totalTime, setTotalTime] = useState(0); // Total elapsed time
     const [workTime, setWorkTime] = useState(0); // Total working time excluding breaks
     const [breakTime, setBreakTime] = useState(0); // Total break time in seconds
+    const [attendanceList, setAttendenceList] = useState([])
+    console.log('attendence: ', attendanceList);
 
     useEffect(() => {
         let interval;
@@ -24,6 +27,24 @@ function Dashboard({ showList, handleGoBack, handleViewList }) {
         }
         return () => clearInterval(interval);
     }, [isWorking, onBreak]);
+
+    useEffect(() => {
+        const showTable = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.post(`${employeeUrl}get-list`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+                console.log('res:', response.data);
+                setAttendenceList(response.data.attendance)
+            } catch (error) {
+                // toast.error('Something went wrong');
+            }
+        }
+        showTable()
+    }, [showList]);
 
     const startWork = () => {
         setIsWorking(true);
@@ -49,25 +70,42 @@ function Dashboard({ showList, handleGoBack, handleViewList }) {
         sendWorkData();
     };
 
+    function convertToTimeFormat(seconds) {
+        let hh = Math.floor(seconds / 3600);
+        let mm = Math.floor((seconds % 3600) / 60);
+        let ss = seconds % 60;
+    
+        return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+    }
+
+    const formatDate = (isoDate) => {
+        const date = new Date(isoDate);
+        return date.toLocaleDateString('en-US'); // Change 'en-US' to your preferred locale if needed
+    };
+
     const sendWorkData = async () => {
         const workData = {
-            totalTime: totalTime,
-            totalWorkTime: workTime,
-            totalBreakTime: breakTime
+            totalTime: convertToTimeFormat(totalTime),
+            totalWorkTime: convertToTimeFormat(workTime),
+            totalBreakTime: convertToTimeFormat(breakTime)
         };
         console.log(workData);
         // Send workData to the backend using fetch or axios
         try {
-            const response = await axios.post(`${employeeUrl}dashboard`, workData);
-            console.log('res:', response);
+            const token = localStorage.getItem('token');
+            const response = await axios.post(`${employeeUrl}dashboard`, workData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
             if (response.data.success) {
-              // toast.success(response.data.message);
+                toast.success(response.data.message);
             } else {
-              // toast.error(response.data.message);
+                toast.error(response.data.message);
             }
-          } catch (error) {
-            // toast.error('Something went wrong');
-          }
+        } catch (error) {
+            toast.error('Something went wrong');
+        }
     };
 
     const formatTime = (seconds) => {
@@ -77,12 +115,12 @@ function Dashboard({ showList, handleGoBack, handleViewList }) {
         return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
-    const data = [
-        { id: 1, date: '2024-05-27', totalTime:'08:00:00', workingTime: '08:00:00', breakTime: '01:00:00' },
-        { id: 2, date: '2024-05-26', totalTime:'08:00:00', workingTime: '07:30:00', breakTime: '00:45:00' },
-        { id: 3, date: '2024-05-25', totalTime:'08:00:00', workingTime: '09:00:00', breakTime: '01:15:00' },
-        // Add more data as needed
-    ];
+    // const data = [
+    //     { id: 1, date: '2024-05-27', totalTime: '08:00:00', workingTime: '08:00:00', breakTime: '01:00:00' },
+    //     { id: 2, date: '2024-05-26', totalTime: '08:00:00', workingTime: '07:30:00', breakTime: '00:45:00' },
+    //     { id: 3, date: '2024-05-25', totalTime: '08:00:00', workingTime: '09:00:00', breakTime: '01:15:00' },
+    //     // Add more data as needed
+    // ];
 
     return (
         <div>
@@ -124,16 +162,16 @@ function Dashboard({ showList, handleGoBack, handleViewList }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((item, index) => (
+                                {attendanceList.map((item, index) => (
                                     <tr key={item.id}>
                                         <td className="px-4 py-2 border">{index + 1}</td>
-                                        <td className="px-4 py-2 border">{item.date}</td>
-                                        <td className="px-4 py-2 border">{item.totalTime}</td>
-                                        <td className="px-4 py-2 border">{item.breakTime}</td>
-                                        <td className="px-4 py-2 border">{item.workingTime}</td>
+                                        <td className="px-4 py-2 border">{formatDate(item.issue_date)}</td>
+                                        <td className="px-4 py-2 border">{item.total_time}</td>
+                                        <td className="px-4 py-2 border">{item.break_time}</td>
+                                        <td className="px-4 py-2 border">{item.working_time}</td>
                                         <td className="px-4 py-2 border">
-                                        <button className='px-3 py-1 text-white bg-green-500 rounded hover:bg-green-700'>Present</button>
-                                    </td>
+                                            <button className='px-3 py-1 text-white bg-green-500 rounded hover:bg-green-700'>Present</button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

@@ -1,11 +1,11 @@
 import express from 'express'
-import { adminSignIn } from '../controllers/adminController.js'
-// import userAuth from '../middleware/userAuth.js'
+import { adminDashboard, adminSignIn, employeeDetails } from '../controllers/adminController.js'
 
 const router = express.Router()
 
+router.get('/dashboard', adminDashboard)
+router.get('/employee-details/:id', employeeDetails)
 
-// router.post('/employee-dashboard', userAuth, getUserById)
 router.post('/signIn', adminSignIn)
 
 

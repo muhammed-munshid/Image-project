@@ -46,7 +46,7 @@ function Navbar({ toggleSidebar, sidebarOpen, handleViewList }) {
                 <button onClick={handleViewList} className="text-left w-full text-gray-800">Attendance List</button>
               </li>
               <li className="mb-2">
-                <button className="text-left w-full text-gray-800">Apply for Leave</button>
+                <button onClick={openModal} className="text-left w-full text-gray-800">Apply for Leave</button>
               </li>
             </ul>
           </div>

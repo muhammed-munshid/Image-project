@@ -3,7 +3,7 @@
 /* eslint-disable no-undef */
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 // import { LoginSocialGoogle } from 'reactjs-social-login';
 // import { GoogleLogin } from 'react-google-login';
 import axios from 'axios';
@@ -22,15 +22,13 @@ function EmployeeLogin() {
       const response = await axios.post(`${employeeUrl}signIn`, employeeData);
       console.log('res:', response);
       if (response.data.success) {
-        // toast.success(response.data.message);
+        toast.success(response.data.message);
         navigate('/dashboard');
         localStorage.setItem('token', response.data.data);
       } else if (response.data.noemployee) {
-        navigate('/dashboard');
-        // toast.error(response.data.message);
+        toast.error(response.data.message);
       } else {
-        navigate('/dashboard');
-        // toast.error(response.data.message);
+        toast.error(response.data.message);
       }
     } catch (error) {
       // toast.error('Something went wrong');

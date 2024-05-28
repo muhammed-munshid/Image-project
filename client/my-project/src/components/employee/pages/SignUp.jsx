@@ -3,7 +3,7 @@
 /* eslint-disable no-undef */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 // import { LoginSocialGoogle } from 'reactjs-social-login';
 // import { GoogleLogin } from 'react-google-login';
 import axios from 'axios';
@@ -16,7 +16,7 @@ function EmployeeSignUp() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const employeeData = { email, password };
+    const employeeData = { name, phone, email, password };
 
     const verifySignUp = async (e) => {
         e.preventDefault();
@@ -24,15 +24,15 @@ function EmployeeSignUp() {
             const response = await axios.post(`${employeeUrl}signUp`, employeeData);
             console.log('res:', response);
             if (response.data.success) {
-                // toast.success(response.data.message);
+                toast.success(response.data.message);
                 navigate('/');
             } else if (response.data.noemployee) {
-                // toast.error(response.data.message);
+                toast.error(response.data.message);
             } else {
-                // toast.error(response.data.message);
+                toast.error(response.data.message);
             }
         } catch (error) {
-            // toast.error('Something went wrong');
+            toast.error('Something went wrong');
         }
     };
 
