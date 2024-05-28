@@ -2,42 +2,40 @@ import { useEffect, useState } from 'react';
 import Navbar from '../Navbar';
 import axios from 'axios';
 import { adminUrl } from '../../../API/api';
+import { toast } from 'react-toastify';
 
-// eslint-disable-next-line react/prop-types
 function AdminDashboard() {
-    const [data, setData] = useState([])
-    const [showDetails, setShowDetails] = useState(false)
-    const [employeeDetails, setEmployeeDetails] = useState({})
-    console.log('emp: ', employeeDetails);
+    const [data, setData] = useState([]);
+    const [showDetails, setShowDetails] = useState(false);
+    const [employeeDetails, setEmployeeDetails] = useState({});
+    const [blockedStatus, setBlockedStatus] = useState({});
 
     const employeesData = async () => {
         try {
             const response = await axios.get(`${adminUrl}dashboard`);
             console.log('res:', response.data);
-            setData(response.data.data)
+            setData(response.data.data);
+            // Initialize blocked status for each employee
+            const initialBlockedStatus = response.data.data.reduce((acc, employee) => {
+                acc[employee._id] = employee.isBlocked || false;
+                return acc;
+            }, {});
+            setBlockedStatus(initialBlockedStatus);
         } catch (error) {
             console.log('error: ', error);
             // toast.error('Something went wrong');
         }
-    }
+    };
 
     useEffect(() => {
         employeesData();
     }, []);
 
-    // const data = [
-    //     { id: 1, name: 'John Doe', phone: '9072065394', email: 'muhammadmunshid200@gmail.com' },
-    //     { id: 2, name: 'Jane Smith', phone: '9072065394', email: 'muhammadmunshid200@gmail.com' },
-    //     { id: 3, name: 'Alice Johnson', phone: '9072065394', email: 'muhammadmunshid200@gmail.com' },
-    //     // Add more data as needed
-    // ];
-
     const viewDetails = async (id) => {
         try {
-            await axios.get(`${adminUrl}employee-details/${id}`).then((response) => {
-                console.log('res: ', response);
-                setEmployeeDetails(response.data.data);
-            });
+            const response = await axios.get(`${adminUrl}employee-details/${id}`);
+            console.log('res: ', response);
+            setEmployeeDetails(response.data.data);
             setShowDetails(true);
         } catch (error) {
             console.log('error: ', error);
@@ -47,6 +45,25 @@ function AdminDashboard() {
     const formatDate = (isoDate) => {
         const date = new Date(isoDate);
         return date.toLocaleDateString('en-US'); // Change 'en-US' to your preferred locale if needed
+    };
+
+    const toggleBlock = async (id) => {
+        const currentStatus = blockedStatus[id];
+        try {
+            const response = await axios.post(`${adminUrl}block-employee/${id}`, { block: !currentStatus });
+            console.log(response);
+            if (response.data.block) {
+                toast.success(response.data.message);
+            } else if (response.data.unBlock) {
+                toast.success(response.data.message);
+            }
+            setBlockedStatus((prevStatus) => ({
+                ...prevStatus,
+                [id]: !currentStatus,
+            }));
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -92,9 +109,6 @@ function AdminDashboard() {
                     <div className="flex flex-col max-h-screen">
                         <div className="my-8">
                             <h1 className="text-3xl font-bold text-center">Employees</h1>
-                            {/* <button onClick={handleGoBack} className="px-6 py-2 text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
-                                Go Back
-                            </button> */}
                         </div>
                         <table className="table-auto bg-white rounded-lg shadow-md">
                             <thead>
@@ -109,7 +123,7 @@ function AdminDashboard() {
                             </thead>
                             <tbody>
                                 {data.map((item, index) => (
-                                    <tr key={item.id}>
+                                    <tr key={item._id}>
                                         <td className="px-4 py-2 border">{index + 1}</td>
                                         <td className="px-4 py-2 border">{item.name}</td>
                                         <td className="px-4 py-2 border">{item.phone}</td>
@@ -118,7 +132,13 @@ function AdminDashboard() {
                                             <button onClick={() => viewDetails(item._id)} className='px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-700'>View</button>
                                         </td>
                                         <td className="px-4 py-2 border">
-                                            <button className='px-3 py-1 text-white bg-red-600 rounded hover:bg-red-700'>Block</button>
+                                            <button
+                                                className={`px-3 py-1 text-white rounded hover:bg-${blockedStatus[item._id] ? 'green' : 'red'}-700`}
+                                                onClick={() => toggleBlock(item._id)}
+                                                style={{ backgroundColor: blockedStatus[item._id] ? '#16a34a' : '#dc2626' }}
+                                            >
+                                                {blockedStatus[item._id] ? 'Unblock' : 'Block'}
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

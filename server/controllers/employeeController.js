@@ -30,6 +30,10 @@ export const signIn = async (req, res) => {
         const { email, password } = req.body;
         const employee = await employeeModel.findOne({ email: email });
 
+        if (employee.block === true) {
+            return res.status(200).send({ message: "Admin Blocked your account", block: true });
+        }
+
         if (!employee) {
             return res.status(200).send({ message: "Incorrect Email or Password", incEmail: true });
         }

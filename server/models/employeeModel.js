@@ -15,7 +15,8 @@ const employeeSchema = new mongoose.Schema({
         type: String
     },
     block: {
-        type: Boolean
+        type: Boolean,
+        default: false
     },
     attendance: [{
         issue_date: {
