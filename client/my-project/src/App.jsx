@@ -9,6 +9,7 @@ import Details from './components/admin/pages/Details';
 import EmployeeSignUp from './components/employee/pages/SignUp';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LeaveForms from './components/admin/pages/LeaveForms';
 // import Navbar from './components/employee/Navbar';
 
 function App() {
@@ -52,6 +53,12 @@ function App() {
             path="/employee-details"
             element={
               <Details />
+            }
+          />
+          <Route
+            path="/leave-forms"
+            element={
+              <LeaveForms />
             }
           />
         </Routes>

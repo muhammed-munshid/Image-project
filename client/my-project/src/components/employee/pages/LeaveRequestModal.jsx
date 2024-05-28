@@ -1,10 +1,12 @@
+import axios from 'axios';
 import { useState } from 'react';
+import { employeeUrl } from '../../../API/api';
+import { toast } from 'react-toastify';
 
 // eslint-disable-next-line react/prop-types
 const LeaveRequestModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
-    startDate: '',
-    endDate: '',
+    date: '',
     reason: '',
   });
 
@@ -16,9 +18,25 @@ const LeaveRequestModal = ({ isOpen, onClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${employeeUrl}request-leave`, formData, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    });
+      console.log('res: ', response);
+      if(response.data.success) {
+        toast.success(response.data.message)
+      } else {
+        toast.error('Something error')
+      }
+    } catch (error) {
+      console.log(error);
+    }
     onClose();
   };
 
@@ -33,8 +51,8 @@ const LeaveRequestModal = ({ isOpen, onClose }) => {
             <label className="block text-sm font-medium text-gray-700">Date</label>
             <input
               type="date"
-              name="startDate"
-              value={formData.startDate}
+              name="date"
+              value={formData.date}
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
             />

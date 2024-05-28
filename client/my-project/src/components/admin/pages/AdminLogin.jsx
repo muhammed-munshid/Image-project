@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminUrl } from '../../../API/api';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 function AdminLogin() {
@@ -21,16 +21,15 @@ function AdminLogin() {
       const response = await axios.post(`${adminUrl}signIn`, employeeData);
       console.log('res:', response);
       if (response.data.success) {
-        // toast.success(response.data.message);
+        toast.success(response.data.message);
         navigate('/admin-dashboard');
       } else if(response.data.incEmail) {
         console.log('Incorrect Email or Password');
-        // navigate('/dashboard');
-        // toast.error(response.data.message);
+        toast.error(response.data.message);
       }
     } catch (error) {
       console.log('error: ', error);
-      // toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 

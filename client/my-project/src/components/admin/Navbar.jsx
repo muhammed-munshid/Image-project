@@ -1,7 +1,13 @@
-// import { useState } from 'react';
-import { Link } from 'react-router-dom'
-// eslint-disable-next-line react/prop-types
-function Navbar({ toggleSidebar, sidebarOpen, handleViewList }) {
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+
+function Navbar() {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
+    };
+
     return (
         <>
             <nav className="bg-red-600 p-3 flex justify-between items-center sticky top-0 h-16">
@@ -23,18 +29,19 @@ function Navbar({ toggleSidebar, sidebarOpen, handleViewList }) {
                 </div>
             </nav>
             {sidebarOpen && (
-                <div className="fixed inset-0 bg-gray-800 bg-opacity-75 z-40" onClick={toggleSidebar}>
-                    <div className={`fixed top-0 left-0 h-full w-64 bg-white p-4 transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`} onClick={e => e.stopPropagation()}>
-                        <h2 className="text-2xl font-bold mb-4">Menu</h2>
+                <div className="fixed inset-0 z-40">
+                    <div className="fixed left-0 h-full w-64 bg-slate-200 p-4" onClick={e => e.stopPropagation()}>
+                        <h2 className="text-2xl font-bold mb-4 text-black">Menu</h2>
                         <ul>
                             <li className="mb-2">
-                                <button onClick={handleViewList} className="text-left w-full text-gray-800">Attendance List</button>
+                                <Link to='/admin-dashboard' className="text-left w-full text-gray-800">Employees List</Link>
                             </li>
                             <li className="mb-2">
-                                <button className="text-left w-full text-gray-800">Apply for Leave</button>
+                                <Link to='/leave-forms' className="text-left w-full text-gray-800">Leave forms</Link>
                             </li>
                         </ul>
                     </div>
+                    <div className="fixed inset-0 bg-black opacity-50" onClick={toggleSidebar}></div>
                 </div>
             )}
         </>

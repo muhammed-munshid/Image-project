@@ -1,3 +1,4 @@
+import adminModel from "../models/adminModel.js"
 import employeeModel from "../models/employeeModel.js"
 
 export const adminSignIn = async (req, res) => {
@@ -33,6 +34,16 @@ export const employeeDetails = async (req, res) => {
         console.log(id);
         const employee = await employeeModel.findById(id)
         res.status(200).send({ data: employee })
+    } catch (error) {
+        console.log('login', error);
+        res.status(500).send({ message: "Error in Login", success: false, error })
+    }
+}
+
+export const leaveForms = async (req, res) => {
+    try {
+        const leaveDatas = await adminModel.find()
+        res.status(200).send({ data: leaveDatas })
     } catch (error) {
         console.log('login', error);
         res.status(500).send({ message: "Error in Login", success: false, error })

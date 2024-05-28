@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import employeeModel from '../models/employeeModel.js';
+import adminModel from '../models/adminModel.js';
 
 export const signUp = async (req, res) => {
     try {
@@ -8,7 +9,7 @@ export const signUp = async (req, res) => {
         const employee = await employeeModel.findOne({ email: email })
         console.log('employee: ', employee);
         if (employee) {
-            res.status(401).send({ exist: true, message: 'You are already registered' })
+            res.status(200).send({ exist: true, message: 'You are already registered' })
         } else {
             const salt = await bcrypt.genSalt(10)
             password = await bcrypt.hash(password, salt)
@@ -16,7 +17,7 @@ export const signUp = async (req, res) => {
                 name, phone, email, password
             })
             employeeData.save()
-            res.status(200).send({ success: true })
+            res.status(200).send({ success: true, message: 'Register Successfully' })
         }
     } catch (error) {
         console.log('error: ', error);
@@ -30,13 +31,13 @@ export const signIn = async (req, res) => {
         const employee = await employeeModel.findOne({ email: email });
 
         if (!employee) {
-            return res.status(401).send({ message: "Incorrect Email or Password", incEmail: false });
+            return res.status(200).send({ message: "Incorrect Email or Password", incEmail: true });
         }
 
         const isMatchPswrd = await bcrypt.compare(password, employee.password);
 
         if (!isMatchPswrd) {
-            return res.status(401).send({ message: "Incorrect Password", incPass: true });
+            return res.status(200).send({ message: "Incorrect Password", incPass: true });
         }
 
         const token = jwt.sign({ id: employee._id }, process.env.JWT_SECRET, { expiresIn: '1y' });
@@ -75,6 +76,27 @@ export const getList = async (req, res) => {
         const id = req.body.employeeId
         const employee = await employeeModel.findById(id)
         res.status(200).send(employee);
+    } catch (error) {
+        console.log('error: ', error);
+        res.status(500).send({ message: "Error in fetching employee details", success: false, error });
+    }
+}
+
+export const requestLeave = async (req, res) => {
+    try {
+        const id = req.body.employeeId
+        const formData = req.body
+        const employee = await employeeModel.findById(id)
+        console.log('formData:', formData);
+        const adminData = new adminModel({
+            name: employee.name,
+            phone: employee.phone,
+            email: employee.email,
+            date: formData.date,
+            reason: formData.reason
+        })
+        adminData.save()
+        res.status(200).send({ success: true, message: 'Your Request sended to admin for approval' })
     } catch (error) {
         console.log('error: ', error);
         res.status(500).send({ message: "Error in fetching employee details", success: false, error });

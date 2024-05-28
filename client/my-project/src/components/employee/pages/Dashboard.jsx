@@ -11,7 +11,6 @@ function Dashboard({ showList, handleGoBack, handleViewList }) {
     const [workTime, setWorkTime] = useState(0); // Total working time excluding breaks
     const [breakTime, setBreakTime] = useState(0); // Total break time in seconds
     const [attendanceList, setAttendenceList] = useState([])
-    console.log('attendence: ', attendanceList);
 
     useEffect(() => {
         let interval;

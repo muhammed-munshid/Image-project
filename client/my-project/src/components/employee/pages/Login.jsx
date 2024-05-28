@@ -25,7 +25,9 @@ function EmployeeLogin() {
         toast.success(response.data.message);
         navigate('/dashboard');
         localStorage.setItem('token', response.data.data);
-      } else if (response.data.noemployee) {
+      } else if (response.data.incEmail) {
+        toast.error(response.data.message);
+      } else if (response.data.incPass) {
         toast.error(response.data.message);
       } else {
         toast.error(response.data.message);

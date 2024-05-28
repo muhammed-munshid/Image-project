@@ -26,7 +26,7 @@ function EmployeeSignUp() {
             if (response.data.success) {
                 toast.success(response.data.message);
                 navigate('/');
-            } else if (response.data.noemployee) {
+            } else if (response.data.exist) {
                 toast.error(response.data.message);
             } else {
                 toast.error(response.data.message);
