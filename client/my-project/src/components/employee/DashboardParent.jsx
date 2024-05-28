@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import Navbar from './Navbar';
-import Dashboard from './pages/Dashboard';
-// import Navbar from './Navbar';  // Adjust the path as necessary
-// import Dashboard from './Dashboard';  // Adjust the path as necessary
+import Navbar from './Navbar';  // Adjust the path as necessary
+import Dashboard from './pages/Dashboard';  // Adjust the path as necessary
 
 function DashboardParent() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,7 +22,7 @@ function DashboardParent() {
     return (
         <div>
             <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} handleViewList={handleViewList} />
-            <Dashboard showList={showList} handleGoBack={handleGoBack} />
+            <Dashboard showList={showList} handleViewList={handleViewList} handleGoBack={handleGoBack} />
         </div>
     );
 }

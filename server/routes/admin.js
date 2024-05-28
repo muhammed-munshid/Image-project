@@ -1,13 +1,12 @@
 import express from 'express'
-import { SignIn, signUp } from '../controllers/employeeController.js'
+import { adminSignIn } from '../controllers/adminController.js'
 // import userAuth from '../middleware/userAuth.js'
 
 const router = express.Router()
 
 
 // router.post('/employee-dashboard', userAuth, getUserById)
-router.post('/signUp', signUp)
-router.post('/signIn', SignIn)
+router.post('/signIn', adminSignIn)
 
 
 export default router

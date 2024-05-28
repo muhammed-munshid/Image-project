@@ -3,17 +3,18 @@ import jwt from 'jsonwebtoken';
 import employeeModel from '../models/employeeModel.js';
 
 export const signUp = async (req, res) => {
+    console.log('Hello');
     try {
-        let { name, email, password } = req.body
+        let { name, phone, email, password } = req.body
         const employee = await employeeModel.findOne({ email: email })
-        console.log('employee: ',employee);
+        console.log('employee: ', employee);
         if (employee) {
             res.status(401).send({ exist: true, message: 'You are already registered' })
         } else {
             const salt = await bcrypt.genSalt(10)
             password = await bcrypt.hash(password, salt)
             const employeeData = new employeeModel({
-                name, email, password
+                name, phone, email, password
             })
             employeeData.save()
             res.status(200).send({ success: true })
@@ -24,39 +25,30 @@ export const signUp = async (req, res) => {
     }
 }
 
-export const SignIn = async (req, res) => {
+export const signIn = async (req, res) => {
     try {
-        // const { email, password } = req.body
-        // const employee = await employeeModel.findOne({ email: email })
-        console.log('employee: ', employee);
-        res.status(200).send({ message: "Login Successfull"})
-        // if (employee) {
-        //     const isMatchPswrd = await bcrypt.compare(password, employee.password)
-        //     if (!isMatchPswrd) {
-        //         console.log('no');
-        //         res.status(401).send({ message: "Incorrect Password", incPass: true })
-        //     } else {
-        //         console.log('yes');
-        //         const token = jwt.sign({ id: employee._id }, process.env.JWT_SECRET, {
-        //             expiresIn: '1y'
-        //         })
-        //         console.log('token :', token);
-        //         await employeeModel.findByIdAndUpdate(employee._id,{
-        //             $set: {
-        //                 status: true
-        //             }
-        //         })
-        //         res.status(200).send({ message: "Login Successfull", success: true, data: token })
-        //     }
-        // } else {
-        //     res.status(401).send({ message: "Incorrect Email or Password", incEmail: false })
-        // }
-    } catch (error) {
-        res.status(500).send({ message: "Error in Login", success: false, error })
-    }
-}
+        const { email, password } = req.body;
+        const employee = await employeeModel.findOne({ email: email });
+        
+        if (!employee) {
+            return res.status(401).send({ message: "Incorrect Email or Password", incEmail: false });
+        }
 
-export const getemployeeById = async (req, res) => {
+        const isMatchPswrd = await bcrypt.compare(password, employee.password);
+
+        if (!isMatchPswrd) {
+            return res.status(401).send({ message: "Incorrect Password", incPass: true });
+        }
+
+        const token = jwt.sign({ id: employee._id }, process.env.JWT_SECRET, { expiresIn: '1y' });
+        return res.status(200).send({ message: "Login Successful", success: true, data: token });
+        
+    } catch (error) {
+        return res.status(500).send({ message: "Error in Login", success: false, error });
+    }
+};
+
+export const dashboard = async (req, res) => {
     try {
         const id = req.body.employeeId
         const employee = await employeeModel.findById(id)

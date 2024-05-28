@@ -1,7 +1,9 @@
+import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { employeeUrl } from '../../../API/api';
 
 // eslint-disable-next-line react/prop-types
-function Dashboard({ showList, handleGoBack }) {
+function Dashboard({ showList, handleGoBack, handleViewList }) {
     const [isWorking, setIsWorking] = useState(false);
     const [onBreak, setOnBreak] = useState(false);
     const [totalTime, setTotalTime] = useState(0); // Total elapsed time
@@ -47,7 +49,7 @@ function Dashboard({ showList, handleGoBack }) {
         sendWorkData();
     };
 
-    const sendWorkData = () => {
+    const sendWorkData = async () => {
         const workData = {
             totalTime: totalTime,
             totalWorkTime: workTime,
@@ -55,6 +57,17 @@ function Dashboard({ showList, handleGoBack }) {
         };
         console.log(workData);
         // Send workData to the backend using fetch or axios
+        try {
+            const response = await axios.post(`${employeeUrl}dashboard`, workData);
+            console.log('res:', response);
+            if (response.data.success) {
+              // toast.success(response.data.message);
+            } else {
+              // toast.error(response.data.message);
+            }
+          } catch (error) {
+            // toast.error('Something went wrong');
+          }
     };
 
     const formatTime = (seconds) => {
@@ -65,16 +78,16 @@ function Dashboard({ showList, handleGoBack }) {
     };
 
     const data = [
-        { id: 1, date: '2024-05-27', name: 'John Doe', workingTime: '08:00:00', breakTime: '01:00:00' },
-        { id: 2, date: '2024-05-26', name: 'Jane Smith', workingTime: '07:30:00', breakTime: '00:45:00' },
-        { id: 3, date: '2024-05-25', name: 'Alice Johnson', workingTime: '09:00:00', breakTime: '01:15:00' },
+        { id: 1, date: '2024-05-27', totalTime:'08:00:00', workingTime: '08:00:00', breakTime: '01:00:00' },
+        { id: 2, date: '2024-05-26', totalTime:'08:00:00', workingTime: '07:30:00', breakTime: '00:45:00' },
+        { id: 3, date: '2024-05-25', totalTime:'08:00:00', workingTime: '09:00:00', breakTime: '01:15:00' },
         // Add more data as needed
     ];
 
     return (
         <div>
-            <div className="flex items-center justify-center h-screen">
-                {!isWorking && !showList ? (
+            {!isWorking && !showList ? (
+                <div className="flex items-center justify-center h-screen">
                     <div className="flex flex-col space-y-4">
                         <button
                             onClick={startWork}
@@ -83,13 +96,15 @@ function Dashboard({ showList, handleGoBack }) {
                             Start Work
                         </button>
                         <button
-                            onClick={handleGoBack}
+                            onClick={handleViewList}
                             className="px-4 py-2 text-white bg-orange-500 rounded hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
                         >
                             Attendance List
                         </button>
                     </div>
-                ) : showList ? (
+                </div>
+            ) : showList ? (
+                <div className="flex items-start justify-center h-screen">
                     <div className="flex flex-col max-h-screen">
                         <div className="flex flex-row justify-between items-center my-8">
                             <h1 className="text-3xl font-bold">Attendance Table</h1>
@@ -102,9 +117,10 @@ function Dashboard({ showList, handleGoBack }) {
                                 <tr>
                                     <th className="px-4 py-2 border">SI No</th>
                                     <th className="px-4 py-2 border">Date</th>
-                                    <th className="px-4 py-2 border">Name</th>
-                                    <th className="px-4 py-2 border">Working Time</th>
+                                    <th className="px-4 py-2 border">Total Time</th>
                                     <th className="px-4 py-2 border">Break Time</th>
+                                    <th className="px-4 py-2 border">Working Time</th>
+                                    <th className="px-4 py-2 border">P/L</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -112,15 +128,20 @@ function Dashboard({ showList, handleGoBack }) {
                                     <tr key={item.id}>
                                         <td className="px-4 py-2 border">{index + 1}</td>
                                         <td className="px-4 py-2 border">{item.date}</td>
-                                        <td className="px-4 py-2 border">{item.name}</td>
-                                        <td className="px-4 py-2 border">{item.workingTime}</td>
+                                        <td className="px-4 py-2 border">{item.totalTime}</td>
                                         <td className="px-4 py-2 border">{item.breakTime}</td>
+                                        <td className="px-4 py-2 border">{item.workingTime}</td>
+                                        <td className="px-4 py-2 border">
+                                        <button className='px-3 py-1 text-white bg-green-500 rounded hover:bg-green-700'>Present</button>
+                                    </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-                ) : (
+                </div>
+            ) : (
+                <div className="flex items-center justify-center h-screen">
                     <div className="bg-yellow-400 p-20 rounded-lg text-center">
                         <div className="mb-4 text-2xl font-bold">TIMER</div>
                         <div className="mb-4 text-4xl font-bold">{formatTime(totalTime)}</div>
@@ -140,8 +161,8 @@ function Dashboard({ showList, handleGoBack }) {
                             End Work
                         </button>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

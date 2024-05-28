@@ -2,15 +2,12 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { adminUrl } from '../../../API/api';
 // import { toast } from 'react-toastify';
-// import { LoginSocialGoogle } from 'reactjs-social-login';
-// import { GoogleLogin } from 'react-google-login';
 import axios from 'axios';
-import { employeeUrl } from '../../../API/api';
-// import Navbar from '../Navbar';
 
-function EmployeeLogin() {
+function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -19,34 +16,26 @@ function EmployeeLogin() {
   const verifyLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${employeeUrl}signIn`, employeeData);
+      const response = await axios.post(`${adminUrl}signIn`, employeeData);
       console.log('res:', response);
       if (response.data.success) {
         // toast.success(response.data.message);
-        navigate('/dashboard');
-        localStorage.setItem('token', response.data.data);
-      } else if (response.data.noemployee) {
-        navigate('/dashboard');
-        // toast.error(response.data.message);
-      } else {
-        navigate('/dashboard');
+        navigate('/admin-dashboard');
+      } else if(response.data.incEmail) {
+        console.log('Incorrect Email or Password');
+        // navigate('/dashboard');
         // toast.error(response.data.message);
       }
     } catch (error) {
+      console.log('error: ', error);
       // toast.error('Something went wrong');
     }
   };
 
-//   const responseGoogle = (response) => {
-//     console.log('Hello');
-//     console.log(response);
-//     // Handle the response, e.g., send it to the backend for verification
-//   };
-
 return (
   <div className="h-screen flex items-center justify-center bg-slate-950">
     <div className="w-full max-w-md p-8 bg-gray-900 text-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-semibold text-center mb-6">Login</h1>
+      <h1 className="text-3xl font-semibold text-center mb-6">Admin Login</h1>
       <form onSubmit={verifyLogin}>
         <div className="mb-4">
           <input
@@ -73,16 +62,11 @@ return (
           />
         </div>
         <div className="text-left text-gray-400 hover:underline hover:text-gray-100 mb-4">
-          <Link to="/forgot">Forgot your password?</Link>
+          {/* <Link to="/forgot">Forgot your password?</Link> */}
         </div>
         <button type="submit" className="uppercase block w-full p-4 text-lg rounded-full bg-indigo-500 hover:bg-indigo-600 focus:outline-none mb-4">Sign In</button>
-        <hr className="my-3" />
         {/* <p className="text-center text-gray-100 mb-4">or use your google account</p> */}
         {/* Add your Google Login button here */}
-        <div className="mt-7 flex justify-center text-gray-400">
-          <p>No register in account?</p>
-          <Link to="/signUp" className="ml-2 text-lg hover:underline hover:text-gray-100">Sign Up</Link>
-        </div>
       </form>
     </div>
   </div>
@@ -90,4 +74,4 @@ return (
 
 }
 
-export default EmployeeLogin;
+export default AdminLogin;
